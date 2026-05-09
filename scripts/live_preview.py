@@ -1,10 +1,9 @@
-"""Live webcam preview with bbox overlay. Standalone — needs the backend OFF
-so we can grab the camera. Press 'q' to quit.
-"""
-import cv2
 import time
-from app.inference_engine import InferenceEngine
+
+import cv2
+
 from app.analytics_engine import AnalyticsEngine
+from app.inference_engine import InferenceEngine
 
 PPE_COLORS = {
     "compliant": (0, 200, 0),
@@ -16,7 +15,7 @@ PPE_COLORS = {
 
 print("Loading model...")
 inference = InferenceEngine()
-analytics = AnalyticsEngine()
+AnalyticsEngine()
 
 print("Opening camera...")
 cap = cv2.VideoCapture(0)
@@ -25,7 +24,7 @@ if not cap.isOpened():
 
 frame_idx = 0
 last_inference = 0.0
-inference_interval = 0.33  # 3 FPS
+inference_interval = 0.33
 
 while True:
     ok, frame = cap.read()
@@ -39,16 +38,23 @@ while True:
         last_inference = now
         frame_idx += 1
     else:
-                                                 s from this tick
+        workers = []
+
     for w_obj in workers:
         b = w_obj.bbox
-        x1, y1         x1 * w), int(b.        x1, y1         x1 * w), int(b.        x2 * h)
+        x1, y1 = int(b.x1 * w), int(b.y1 * h)
+        x2, y2 = int(b.x2 * w), int(b.y2 * h)
         ppe = w_obj.ppe_status.value
         state = w_obj.activity_state.value
         color = PPE_COLORS.get(ppe, (180, 180, 180))
         cv2.rectangle(frame, (x1, y1), (x2, y2), color, 2)
-        label = f"#{w_obj.track_id} {state}        label = f"#{putText(frame, label, (x1, max(20, y1 - 8)),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.5                    cv2.)
+        label = f"#{w_obj.track_id} {state} {ppe}"
+        cv2.putText(frame, label, (x1, max(20, y1 - 8)),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.55, color, 2, cv2.LINE_AA)
 
-    cv2.imshow("Construction Labor Intel — Live (q to quit)", frame)
-    if cv2.waitKey(1) & 0xFF == o    if cv2.waitKey(1) & 0xFF == ose(    if cv2royAllWindows()
+    cv2.imshow("Construction Labor Intel - Live (q to quit)", frame)
+    if cv2.waitKey(1) & 0xFF == ord("q"):
+        break
+
+cap.release()
+cv2.destroyAllWindows()

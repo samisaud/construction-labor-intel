@@ -202,7 +202,6 @@ def main() -> int:
 
             # Tick analytics on a fixed cadence.
             now_mono = time.monotonic()
-            ran_tick = False
             if now_mono - last_tick >= tick_seconds:
                 last_tick = now_mono
                 now_dt = datetime.now(timezone.utc)
@@ -210,7 +209,6 @@ def main() -> int:
                     latest_workers, now=now_dt,
                 )
                 anomalies = anomaly_det.evaluate(zone_stats)
-                ran_tick = True
 
                 for zs in zone_stats:
                     stats_fp.write(zs.model_dump_json() + "\n")

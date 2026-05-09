@@ -3,10 +3,8 @@ from __future__ import annotations
 import asyncio
 import logging
 import os
-import threading
 from contextlib import asynccontextmanager
 from datetime import datetime, timedelta, timezone
-from typing import Any
 
 from fastapi import FastAPI, HTTPException, Query, Response, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
@@ -21,7 +19,6 @@ from app.schemas import (
     TrackedWorker,
     WSEnvelope,
     WSMessageType,
-    ZoneStats,
 )
 from app.stream_manager import StreamManager, StreamSource
 from app.time_series_store import TimeSeriesStore
