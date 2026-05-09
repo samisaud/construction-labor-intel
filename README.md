@@ -2,7 +2,7 @@
 
 A computer vision system that turns construction-site CCTV into operational data for project managers — labor counts per zone, PPE compliance, productivity trends, and anomaly alerts. Runs on a single machine, on-prem, no imagery leaves the system.
 
-![Dashboard](demo_assets/screenshots/dashboard_kpis.png)
+![Dashboard](demo_assets/dashboard.png)
 
 ## What's interesting about it
 
