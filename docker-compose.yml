@@ -1,0 +1,55 @@
+services:
+  # RTSP server. Receives ffmpeg pushes from the simulator, serves to the app.
+  rtsp:
+    image: bluenviron/mediamtx:latest
+    container_name: labor_intel_rtsp
+    ports:
+      - "8554:8554"
+      - "8889:8889"  # WebRTC (optional)
+    restart: unless-stopped
+
+  # Backend API + inference. NVIDIA runtime if you have a GPU.
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: labor_intel_backend
+    depends_on:
+      - rtsp
+    environment:
+      LABOR_INTEL_LOG_LEVEL: INFO
+      LABOR_INTEL_STREAM_SOURCES: ${LABOR_INTEL_STREAM_SOURCES:-}
+      LABOR_INTEL_WEIGHTS_PATH: /weights/best.onnx
+    volumes:
+      - ./training/artifacts/weights:/weights:ro
+      - ./data:/app/data
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+    # Uncomment for GPU:
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: 1
+    #           capabilities: [gpu]
+
+  # Streamlit dashboard.
+  dashboard:
+    image: python:3.11-slim
+    container_name: labor_intel_dashboard
+    depends_on:
+      - backend
+    working_dir: /app
+    environment:
+      LABOR_INTEL_API_HOST: backend
+      LABOR_INTEL_API_PORT: "8000"
+    volumes:
+      - ./dashboard:/app
+    command: >
+      bash -c "pip install -q -r requirements.txt &&
+               streamlit run app.py --server.port 8501 --server.address 0.0.0.0"
+    ports:
+      - "8501:8501"
+    restart: unless-stopped

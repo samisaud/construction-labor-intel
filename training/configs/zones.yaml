@@ -1,0 +1,60 @@
+# Zone definitions for Zone Productivity Index (ZPI) computation.
+#
+# polygon: list of [x, y] vertices in NORMALIZED image coordinates (0.0-1.0).
+#          A point is "in zone" if its bbox centroid (also normalized) lies
+#          inside the polygon. Resolution-independent so zones survive camera
+#          changes / resolution upgrades without recalibration.
+#
+# expected.workers / expected.active: tuned per project phase. Edit before
+#          deployment to match crew sizing for the current construction phase.
+#
+# critical_path: zones flagged here raise anomaly severity HIGH on understaffing.
+
+phase: "structural_framing"  # informational only — for ops audit trail
+
+cameras:
+  cam_01:
+    label: "North entrance / staging"
+    zones:
+      - id: staging_north
+        polygon: [[0.0, 0.0], [0.5, 0.0], [0.5, 1.0], [0.0, 1.0]]
+        expected:
+          workers: 4
+          active: 3
+        critical_path: false
+      - id: framing_north
+        polygon: [[0.5, 0.0], [1.0, 0.0], [1.0, 1.0], [0.5, 1.0]]
+        expected:
+          workers: 8
+          active: 6
+        critical_path: true
+
+  cam_02:
+    label: "East deck"
+    zones:
+      - id: deck_east
+        polygon: [[0.0, 0.0], [1.0, 0.0], [1.0, 1.0], [0.0, 1.0]]
+        expected:
+          workers: 6
+          active: 5
+        critical_path: true
+
+  cam_03:
+    label: "Crane swing zone"
+    zones:
+      - id: crane_zone
+        polygon: [[0.0, 0.0], [1.0, 0.0], [1.0, 1.0], [0.0, 1.0]]
+        expected:
+          workers: 3
+          active: 2
+        critical_path: true
+
+  cam_04:
+    label: "South perimeter / parking"
+    zones:
+      - id: perimeter_south
+        polygon: [[0.0, 0.0], [1.0, 0.0], [1.0, 1.0], [0.0, 1.0]]
+        expected:
+          workers: 2
+          active: 1
+        critical_path: false
